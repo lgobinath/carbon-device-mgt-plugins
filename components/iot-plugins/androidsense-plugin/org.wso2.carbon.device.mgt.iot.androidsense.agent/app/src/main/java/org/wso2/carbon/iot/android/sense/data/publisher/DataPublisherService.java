@@ -118,6 +118,9 @@ public class DataPublisherService extends Service {
                             Event event = new Event();
                             event.setTimestamp(batteryData.getTimestamp());
                             event.setBattery(batteryData.getLevel());
+                            event.setBatteryTemperature(batteryData.getTemperature());
+                            event.setBatteryStatus(batteryData.getStatus());
+                            event.setBatteryState(batteryData.getState().toString());
                             events.add(event);
                         }
                     }

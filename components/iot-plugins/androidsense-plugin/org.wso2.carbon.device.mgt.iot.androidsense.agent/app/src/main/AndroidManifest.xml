@@ -53,11 +53,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </receiver>
+
         <receiver
             android:name="org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryDataReceiver"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_CHANGED" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+                <action android:name="android.intent.action.BATTERY_OKAY" />
             </intent-filter>
         </receiver>
 

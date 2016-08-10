@@ -12,6 +12,12 @@ public class Event {
     private String deviceId;
     private String type;
     private int battery;
+    private int batteryTemperature;
+    private int batteryStatus;
+    /**
+     * LOW or OK
+     */
+    private String batteryState;
     private double gps[]; //lat,long
     private float accelerometer[]; //x,y,z
     private float magnetic[]; //x,y,z
@@ -34,7 +40,6 @@ public class Event {
     private String beaconProximity;
 
 
-
     private int getBattery() {
         return battery;
     }
@@ -42,6 +47,21 @@ public class Event {
     public void setBattery(int battery) {
         this.type = "battery";
         this.battery = battery;
+    }
+
+    public void setBatteryTemperature(int batteryTemperature) {
+        this.type = "battery";  // Type is battery
+        this.batteryTemperature = batteryTemperature;
+    }
+
+    public void setBatteryStatus(int batteryStatus) {
+        this.type = "battery";  // Type is battery
+        this.batteryStatus = batteryStatus;
+    }
+
+    public void setBatteryState(String batteryState) {
+        this.type = "battery";  // Type is battery
+        this.batteryState = batteryState;
     }
 
     private double[] getGps() {
@@ -192,7 +212,7 @@ public class Event {
 
     public String getTurns() {
 
-        if (turn == null || turn.isEmpty() || turn.equals("null")){
+        if (turn == null || turn.isEmpty() || turn.equals("null")) {
             turn = "No Turns";
         }
         return turn;

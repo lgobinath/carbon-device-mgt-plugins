@@ -18,6 +18,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
 import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
+import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,6 +32,7 @@ public class SenseDataHolder {
 
     private static List<SensorData> sensorDataHolder;
     private static List<BatteryData> batteryDataHolder;
+    private static List<CallData> callDataHolder;
     private static List<LocationData> locationDataHolder;
     private static List<WordData> wordDataHolder;
     private static List<SpeedData> speedDataHolder;
@@ -54,6 +56,13 @@ public class SenseDataHolder {
             batteryDataHolder = new CopyOnWriteArrayList<>();
         }
         return batteryDataHolder;
+    }
+
+    public static List<CallData> getCallDataHolder(){
+        if(callDataHolder == null){
+            callDataHolder = new CopyOnWriteArrayList<>();
+        }
+        return callDataHolder;
     }
 
     public static List<LocationData> getLocationDataHolder(){
@@ -94,6 +103,10 @@ public class SenseDataHolder {
 
     public static void resetBatteryDataHolder(){
         batteryDataHolder = null;
+    }
+
+    public static void resetCallDataHolder(){
+        callDataHolder = null;
     }
 
     public static void resetLocationDataHolder(){
