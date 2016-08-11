@@ -34,6 +34,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationDataRead
 import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
+import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.ProcessWords;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 import org.wso2.carbon.iot.android.sense.util.SenseDataHolder;
@@ -111,7 +112,7 @@ public class DataPublisherService extends Service {
                     }
                     SenseDataHolder.resetSensorDataHolder();
 
-                    //retrieve batter data.
+                    //retrieve battery data.
                     List<BatteryData> batteryDataMap = SenseDataHolder.getBatteryDataHolder();
                     if (!batteryDataMap.isEmpty()) {
                         for (BatteryData batteryData : batteryDataMap) {
@@ -125,6 +126,7 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetBatteryDataHolder();
+
                     //retrieve location data.
                     List<LocationData> locationDataMap = SenseDataHolder.getLocationDataHolder();
 
@@ -189,6 +191,22 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetWordDataHolder();
+
+                    // retrieve call data.
+                    List<CallData> callDataList = SenseDataHolder.getCallDataHolder();
+                    if (!callDataList.isEmpty()) {
+                        for (CallData callData : callDataList) {
+                            Event event = new Event();
+                            event.setCallNumber(callData.getPhoneNumber());
+                            event.setCallType(callData.getType().toString().toLowerCase());
+                            event.setCallStartTime(callData.getStartTime());
+                            event.setCallEndTime(callData.getEndTime());
+
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetCallDataHolder();
+
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {
                         String user = LocalRegistry.getUsername(context);

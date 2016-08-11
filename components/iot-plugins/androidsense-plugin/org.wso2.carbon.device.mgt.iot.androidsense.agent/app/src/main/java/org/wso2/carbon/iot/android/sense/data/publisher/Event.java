@@ -38,6 +38,10 @@ public class Event {
     private int beaconMinor;
     private int beaconUuid;
     private String beaconProximity;
+    private String callNumber;
+    private String callType;
+    private long callStartTime;
+    private long callEndTime;
 
 
     private int getBattery() {
@@ -49,14 +53,26 @@ public class Event {
         this.battery = battery;
     }
 
+    public int getBatteryTemperature() {
+        return batteryTemperature;
+    }
+
     public void setBatteryTemperature(int batteryTemperature) {
         this.type = "battery";  // Type is battery
         this.batteryTemperature = batteryTemperature;
     }
 
+    public int getBatteryStatus() {
+        return batteryStatus;
+    }
+
     public void setBatteryStatus(int batteryStatus) {
         this.type = "battery";  // Type is battery
         this.batteryStatus = batteryStatus;
+    }
+
+    public String getBatteryState() {
+        return batteryState;
     }
 
     public void setBatteryState(String batteryState) {
@@ -258,6 +274,42 @@ public class Event {
         return beaconProximity;
     }
 
+    public String getCallNumber() {
+        return callNumber;
+    }
+
+    public void setCallNumber(String callNumber) {
+        this.type = "call";
+        this.callNumber = callNumber;
+    }
+
+    public String getCallType() {
+        return callType;
+    }
+
+    public void setCallType(String callType) {
+        this.type = "call";
+        this.callType = callType;
+    }
+
+    public long getCallStartTime() {
+        return callStartTime;
+    }
+
+    public void setCallStartTime(long callStartTime) {
+        this.type = "call";
+        this.callStartTime = callStartTime;
+    }
+
+    public long getCallEndTime() {
+        return callEndTime;
+    }
+
+    public void setCallEndTime(long callEndTime) {
+        this.type = "call";
+        this.callEndTime = callEndTime;
+    }
+
     public JSONObject getEvent() throws JSONException {
         JSONObject jsonEvent = new JSONObject();
         JSONObject jsonMetaData = new JSONObject();
@@ -268,7 +320,13 @@ public class Event {
         jsonEvent.put("metaData", jsonMetaData);
 
         JSONObject jsonPayloadData = new JSONObject();
+        // battery
         jsonPayloadData.put("battery", getBattery());
+        jsonPayloadData.put("battery_state", getBatteryState());
+        jsonPayloadData.put("battery_status", getBatteryStatus());
+        jsonPayloadData.put("battery_temperature", getBatteryTemperature());
+
+
         //gps
         double gpsEvents[] = getGps();
         jsonPayloadData.put("gps_lat", gpsEvents[0]);
@@ -320,6 +378,12 @@ public class Event {
         jsonPayloadData.put("word", getWord());
         jsonPayloadData.put("word_sessionId", getWordSessionId());
         jsonPayloadData.put("word_status", getWordStatus());
+
+        // call
+        jsonPayloadData.put("call_number", getCallNumber());
+        jsonPayloadData.put("call_type", getCallType());
+        jsonPayloadData.put("call_start_time", getCallStartTime());
+        jsonPayloadData.put("call_end_time", getCallEndTime());
 
         jsonEvent.put("payloadData", jsonPayloadData);
 
