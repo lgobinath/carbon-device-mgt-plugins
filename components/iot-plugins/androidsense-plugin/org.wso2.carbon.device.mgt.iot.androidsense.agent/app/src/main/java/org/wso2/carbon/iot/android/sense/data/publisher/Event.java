@@ -42,7 +42,7 @@ public class Event {
     private String callType;
     private long callStartTime;
     private long callEndTime;
-
+    private String screenState;
 
     private int getBattery() {
         return battery;
@@ -310,6 +310,15 @@ public class Event {
         this.callEndTime = callEndTime;
     }
 
+    public String getScreenState() {
+        return screenState;
+    }
+
+    public void setScreenState(String screenState) {
+        this.type = "screen";
+        this.screenState = screenState;
+    }
+
     public JSONObject getEvent() throws JSONException {
         JSONObject jsonEvent = new JSONObject();
         JSONObject jsonMetaData = new JSONObject();
@@ -384,6 +393,9 @@ public class Event {
         jsonPayloadData.put("call_type", getCallType());
         jsonPayloadData.put("call_start_time", getCallStartTime());
         jsonPayloadData.put("call_end_time", getCallEndTime());
+
+        // screen
+        jsonPayloadData.put("screen_state", getScreenState());
 
         jsonEvent.put("payloadData", jsonPayloadData);
 

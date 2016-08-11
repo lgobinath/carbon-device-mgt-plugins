@@ -65,11 +65,17 @@
             </intent-filter>
         </receiver>
 
-        <receiver
-            android:name="org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver">
+        <receiver android:name="org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenDataReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON"/>
+                <action android:name="android.intent.action.SCREEN_OFF"/>
             </intent-filter>
         </receiver>
 

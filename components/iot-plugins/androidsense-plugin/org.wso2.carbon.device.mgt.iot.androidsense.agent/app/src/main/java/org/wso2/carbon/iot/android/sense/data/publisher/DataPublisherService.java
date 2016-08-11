@@ -35,6 +35,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
+import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.ProcessWords;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 import org.wso2.carbon.iot.android.sense.util.SenseDataHolder;
@@ -201,11 +202,25 @@ public class DataPublisherService extends Service {
                             event.setCallType(callData.getType().toString().toLowerCase());
                             event.setCallStartTime(callData.getStartTime());
                             event.setCallEndTime(callData.getEndTime());
+                            event.setTimestamp(callData.getStartTime());
 
                             events.add(event);
                         }
                     }
                     SenseDataHolder.resetCallDataHolder();
+
+                    // retrieve screen data.
+                    List<ScreenData> screenDataList = SenseDataHolder.getScreenDataHolder();
+                    if (!screenDataList.isEmpty()) {
+                        for (ScreenData screenData : screenDataList) {
+                            Event event = new Event();
+                            event.setScreenState(screenData.getAction());
+                            event.setTimestamp(screenData.getTimestamp());
+
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetScreenDataHolder();
 
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {
