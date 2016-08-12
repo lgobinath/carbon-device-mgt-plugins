@@ -14,6 +14,7 @@
 package org.wso2.carbon.iot.android.sense.util;
 
 import org.wso2.carbon.iot.android.sense.beacon.BeaconScanedData;
+import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
 import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
@@ -23,7 +24,6 @@ import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import android.util.Log;
 
 
 /**
@@ -39,6 +39,7 @@ public class SenseDataHolder {
     private static List<SpeedData> speedDataHolder;
     private static List<BeaconScanedData> beaconScanedDataHolder;
     private static List<ScreenData> screenDataHolder;
+    private static List<AudioData> audioDataHolder;
     //LocationData gps;
 
 
@@ -105,6 +106,13 @@ public class SenseDataHolder {
         return screenDataHolder;
     }
 
+    public static List<AudioData> getAudioDataHolder() {
+        if(audioDataHolder == null){
+            audioDataHolder = new CopyOnWriteArrayList<>();
+        }
+        return audioDataHolder;
+    }
+
     public static void resetSensorDataHolder(){
         sensorDataHolder = null;
     }
@@ -135,5 +143,9 @@ public class SenseDataHolder {
 
     public static void resetScreenDataHolder() {
         screenDataHolder = null;
+    }
+
+    public static void resetAudioDataHolder() {
+        audioDataHolder = null;
     }
 }

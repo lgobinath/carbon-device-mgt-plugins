@@ -42,7 +42,19 @@ public class Event {
     private String callType;
     private long callStartTime;
     private long callEndTime;
+
+    /**
+     * State of the phone display.
+     * Possible values are:
+     * on
+     * off
+     * unknown
+     */
     private String screenState;
+
+    private boolean audioPlaying;
+    private boolean headsetOn;
+    private int musicVolume;
 
     private int getBattery() {
         return battery;
@@ -319,6 +331,33 @@ public class Event {
         this.screenState = screenState;
     }
 
+    public boolean isAudioPlaying() {
+        return audioPlaying;
+    }
+
+    public void setAudioPlaying(boolean audioPlaying) {
+        this.type = "audio";
+        this.audioPlaying = audioPlaying;
+    }
+
+    public boolean isHeadsetOn() {
+        return headsetOn;
+    }
+
+    public void setHeadsetOn(boolean headsetOn) {
+        this.type = "audio";
+        this.headsetOn = headsetOn;
+    }
+
+    public int getMusicVolume() {
+        return musicVolume;
+    }
+
+    public void setMusicVolume(int musicVolume) {
+        this.type = "audio";
+        this.musicVolume = musicVolume;
+    }
+
     public JSONObject getEvent() throws JSONException {
         JSONObject jsonEvent = new JSONObject();
         JSONObject jsonMetaData = new JSONObject();
@@ -397,6 +436,11 @@ public class Event {
         // screen
         jsonPayloadData.put("screen_state", getScreenState());
 
+        // headset
+        jsonPayloadData.put("audio_playing", isAudioPlaying());
+        jsonPayloadData.put("headset_on", isHeadsetOn());
+        jsonPayloadData.put("music_volume", getMusicVolume());
+        
         jsonEvent.put("payloadData", jsonPayloadData);
 
         return jsonEvent;

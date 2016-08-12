@@ -33,6 +33,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationData;
 import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationDataReader;
 import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
+import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
@@ -221,6 +222,20 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetScreenDataHolder();
+
+                    // retrieve screen data.
+                    List<AudioData> audioDataList = SenseDataHolder.getAudioDataHolder();
+                    if (!screenDataList.isEmpty()) {
+                        for (AudioData audioData : audioDataList) {
+                            Event event = new Event();
+                            event.setTimestamp(audioData.getTimestamp());
+                            event.setAudioPlaying(audioData.isPlaying());
+                            audioData.setHeadsetOn(audioData.isHeadsetOn());
+                            audioData.setMusicVolume(audioData.getMusicVolume());
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetAudioDataHolder();
 
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {

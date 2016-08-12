@@ -50,6 +50,7 @@ public class SenseService extends Service {
         SenseDataCollector Location = new SenseDataCollector(this, SenseDataCollector.DataType.LOCATION);
         registerReceiver(new BatteryDataReceiver(), new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         SenseDataCollector speed = new SenseDataCollector(this, SenseDataCollector.DataType.SPEED);
+        SenseDataCollector audio = new SenseDataCollector(this, SenseDataCollector.DataType.AUDIO);
 
 
         //service will not be stopped until we manually stop the service
