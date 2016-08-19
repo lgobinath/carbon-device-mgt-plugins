@@ -84,7 +84,7 @@ public class Event {
     }
 
     public String getBatteryState() {
-        return batteryState;
+        return batteryState != null ? batteryState : "";
     }
 
     public void setBatteryState(String batteryState) {
@@ -285,12 +285,11 @@ public class Event {
     }
 
     public String getBeaconProximity() {
-        this.type = "beaconProximity";
-        return beaconProximity;
+        return beaconProximity != null ? beaconProximity : "";
     }
 
     public String getCallNumber() {
-        return callNumber;
+        return callNumber != null ? callNumber : "";
     }
 
     public void setCallNumber(String callNumber) {
@@ -299,7 +298,7 @@ public class Event {
     }
 
     public String getCallType() {
-        return callType;
+        return callType != null ? callType : "";
     }
 
     public void setCallType(String callType) {
@@ -326,7 +325,7 @@ public class Event {
     }
 
     public String getScreenState() {
-        return screenState;
+        return screenState != null ? screenState : "";
     }
 
     public void setScreenState(String screenState) {
