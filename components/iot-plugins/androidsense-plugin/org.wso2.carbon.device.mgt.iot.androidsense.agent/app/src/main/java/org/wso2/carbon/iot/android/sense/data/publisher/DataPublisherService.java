@@ -225,13 +225,13 @@ public class DataPublisherService extends Service {
 
                     // retrieve screen data.
                     List<AudioData> audioDataList = SenseDataHolder.getAudioDataHolder();
-                    if (!screenDataList.isEmpty()) {
+                    if (!audioDataList.isEmpty()) {
                         for (AudioData audioData : audioDataList) {
                             Event event = new Event();
                             event.setTimestamp(audioData.getTimestamp());
                             event.setAudioPlaying(audioData.isPlaying());
-                            audioData.setHeadsetOn(audioData.isHeadsetOn());
-                            audioData.setMusicVolume(audioData.getMusicVolume());
+                            event.setHeadsetOn(audioData.isHeadsetOn());
+                            event.setMusicVolume(audioData.getMusicVolume());
                             events.add(event);
                         }
                     }
