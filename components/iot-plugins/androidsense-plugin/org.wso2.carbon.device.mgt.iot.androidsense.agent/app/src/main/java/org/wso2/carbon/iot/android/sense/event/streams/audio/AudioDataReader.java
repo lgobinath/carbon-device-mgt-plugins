@@ -40,14 +40,11 @@ public class AudioDataReader extends DataReader {
     public void run() {
         Log.d(TAG, "Running AudioDataReader");
         AudioManager manager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        if (manager.isMusicActive()) {
-            // Something is playing
-            AudioData audioData = new AudioData();
-            audioData.setTimestamp(new Date().getTime());
-            audioData.setPlaying(true);
-            audioData.setHeadsetOn(manager.isWiredHeadsetOn());
-            audioData.setMusicVolume(manager.getStreamVolume(AudioManager.STREAM_MUSIC));
-            SenseDataHolder.getAudioDataHolder().add(audioData);
-        }
+        AudioData audioData = new AudioData();
+        audioData.setTimestamp(new Date().getTime());
+        audioData.setPlaying(manager.isMusicActive());
+        audioData.setHeadsetOn(manager.isWiredHeadsetOn());
+        audioData.setMusicVolume(manager.getStreamVolume(AudioManager.STREAM_MUSIC));
+        SenseDataHolder.getAudioDataHolder().add(audioData);
     }
 }
