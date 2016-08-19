@@ -229,6 +229,9 @@ public class Event {
 
     public float getSpeed() {
         this.type = "speed";
+        if (Float.isInfinite(speed) || Float.isNaN(speed)) {
+            return -1.0f;
+        }
         return speed;
     }
 
@@ -440,7 +443,7 @@ public class Event {
         jsonPayloadData.put("audio_playing", isAudioPlaying());
         jsonPayloadData.put("headset_on", isHeadsetOn());
         jsonPayloadData.put("music_volume", getMusicVolume());
-        
+
         jsonEvent.put("payloadData", jsonPayloadData);
 
         return jsonEvent;

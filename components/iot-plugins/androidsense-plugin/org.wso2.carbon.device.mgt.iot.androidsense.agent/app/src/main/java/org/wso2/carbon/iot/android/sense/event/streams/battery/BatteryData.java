@@ -51,7 +51,7 @@ public class BatteryData {
         String technology = intent.getExtras().getString(BatteryManager.EXTRA_TECHNOLOGY);
         temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
         voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
-
+        state = State.OK;
     }
 
     BatteryData(State state) {
