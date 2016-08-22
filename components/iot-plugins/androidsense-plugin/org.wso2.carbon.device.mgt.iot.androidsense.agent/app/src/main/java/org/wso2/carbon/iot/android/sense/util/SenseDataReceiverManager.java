@@ -22,14 +22,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.telephony.TelephonyManager;
 
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryDataReceiver;
+import org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenDataReceiver;
 
 public class SenseDataReceiverManager {
     private static BroadcastReceiver batteryDataReceiver;
 
     private static BroadcastReceiver screenDataReceiver;
+
+    private static BroadcastReceiver callDataReceiver;
 
     private SenseDataReceiverManager() {
 
@@ -69,6 +73,24 @@ public class SenseDataReceiverManager {
         if (screenDataReceiver != null) {
             context.unregisterReceiver(screenDataReceiver);
             screenDataReceiver = null;
+        }
+    }
+
+    public static void registerCallDataReceiver(Context context) {
+        if (callDataReceiver == null) {
+            callDataReceiver = new CallDataReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+            intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
+
+            context.registerReceiver(callDataReceiver, intentFilter);
+        }
+    }
+
+    public static void unregisterCallDataReceiver(Context context) {
+        if (callDataReceiver != null) {
+            context.unregisterReceiver(callDataReceiver);
+            callDataReceiver = null;
         }
     }
 }

@@ -56,14 +56,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-            </intent-filter>
-        </receiver>
-
         <activity
             android:name="org.wso2.carbon.iot.android.sense.realtimeviewer.ActivitySelectSensor"
             android:label="My Sensors"
