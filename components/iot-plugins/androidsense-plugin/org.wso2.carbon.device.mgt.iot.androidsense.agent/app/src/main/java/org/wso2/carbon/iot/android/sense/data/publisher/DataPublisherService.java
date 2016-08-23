@@ -25,26 +25,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.wso2.carbon.iot.android.sense.beacon.BeaconScanedData;
+import org.wso2.carbon.iot.android.sense.constants.SenseConstants;
 import org.wso2.carbon.iot.android.sense.data.publisher.mqtt.AndroidSenseMQTTHandler;
 import org.wso2.carbon.iot.android.sense.data.publisher.mqtt.transport.MQTTTransportHandler;
 import org.wso2.carbon.iot.android.sense.data.publisher.mqtt.transport.TransportHandlerException;
-import org.wso2.carbon.iot.android.sense.constants.SenseConstants;
 import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationData;
-import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationDataReader;
-import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
+import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
+import org.wso2.carbon.iot.android.sense.event.streams.activity.ActivityData;
 import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.ProcessWords;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
-import org.wso2.carbon.iot.android.sense.util.SenseDataHolder;
 import org.wso2.carbon.iot.android.sense.util.LocalRegistry;
-//import org.wso2.carbon.iot.android.sense.util.SenseClient;
+import org.wso2.carbon.iot.android.sense.util.SenseDataHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+//import org.wso2.carbon.iot.android.sense.util.SenseClient;
 
 /**
  * This is an android service which publishes the data to the server.
@@ -139,7 +140,7 @@ public class DataPublisherService extends Service {
                             event.setGps(new double[]{locationData.getLatitude(), locationData.getLongitude()});
                             events.add(event);
                         }
-                     }
+                    }
                     SenseDataHolder.resetLocationDataHolder();
 
                     //retrieve speed data.
@@ -223,7 +224,7 @@ public class DataPublisherService extends Service {
                     }
                     SenseDataHolder.resetScreenDataHolder();
 
-                    // retrieve screen data.
+                    // retrieve audio data.
                     List<AudioData> audioDataList = SenseDataHolder.getAudioDataHolder();
                     if (!audioDataList.isEmpty()) {
                         for (AudioData audioData : audioDataList) {
@@ -236,6 +237,19 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetAudioDataHolder();
+
+                    // retrieve activity data.
+                    List<ActivityData> activityDataList = SenseDataHolder.getActivityDataHolder();
+                    if (!activityDataList.isEmpty()) {
+                        for (ActivityData activityData : activityDataList) {
+                            Event event = new Event();
+                            event.setTimestamp(activityData.getTimestamp());
+                            event.setActivityType(activityData.getActivity());
+                            event.setConfidence(activityData.getConfidence());
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetActivityDataHolder();
 
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {

@@ -55,6 +55,8 @@ public class Event {
     private boolean audioPlaying;
     private boolean headsetOn;
     private int musicVolume;
+    private int activityType;
+    private int confidence;
 
     private int getBattery() {
         return battery;
@@ -360,6 +362,25 @@ public class Event {
         this.musicVolume = musicVolume;
     }
 
+    public int getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(int activityType) {
+        this.type = "activity";
+        this.activityType = activityType;
+    }
+
+    public int getConfidence() {
+        return confidence;
+    }
+
+    public void setConfidence(int confidence) {
+        // Do not set type here since it can be used for various types.
+        // However, now it is being used by activity only
+        this.confidence = confidence;
+    }
+
     public JSONObject getEvent() throws JSONException {
         JSONObject jsonEvent = new JSONObject();
         JSONObject jsonMetaData = new JSONObject();
@@ -442,6 +463,9 @@ public class Event {
         jsonPayloadData.put("audio_playing", isAudioPlaying());
         jsonPayloadData.put("headset_on", isHeadsetOn());
         jsonPayloadData.put("music_volume", getMusicVolume());
+
+        jsonPayloadData.put("activity_type", getActivityType());
+        jsonPayloadData.put("confidence", getConfidence());
 
         jsonEvent.put("payloadData", jsonPayloadData);
 

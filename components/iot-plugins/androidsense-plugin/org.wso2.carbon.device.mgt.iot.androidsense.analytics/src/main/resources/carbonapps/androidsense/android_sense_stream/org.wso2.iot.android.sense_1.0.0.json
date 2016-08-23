@@ -50,6 +50,8 @@
     {"name": "screen_state", "type": "STRING"},
     {"name": "audio_playing", "type": "BOOL"},
     {"name": "headset_on", "type": "BOOL"},
-    {"name": "music_volume", "type": "STRING"}
+    {"name": "music_volume", "type": "STRING"},
+    {"name": "activity_type", "type": "INT"},
+    {"name": "confidence", "type": "INT"}
   ]
 }

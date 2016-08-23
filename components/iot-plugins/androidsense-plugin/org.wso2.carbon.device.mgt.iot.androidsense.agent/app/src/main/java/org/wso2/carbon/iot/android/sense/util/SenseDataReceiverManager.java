@@ -18,12 +18,19 @@
 
 package org.wso2.carbon.iot.android.sense.util;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.ActivityRecognition;
+
+import org.wso2.carbon.iot.android.sense.event.streams.activity.ActivityReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenDataReceiver;
@@ -34,6 +41,8 @@ public class SenseDataReceiverManager {
     private static BroadcastReceiver screenDataReceiver;
 
     private static BroadcastReceiver callDataReceiver;
+
+    private static GoogleApiClient apiClient;
 
     private SenseDataReceiverManager() {
 
@@ -91,6 +100,36 @@ public class SenseDataReceiverManager {
         if (callDataReceiver != null) {
             context.unregisterReceiver(callDataReceiver);
             callDataReceiver = null;
+        }
+    }
+
+    public static void registerActivityDataReceiver(Context context) {
+        if (apiClient == null) {
+            Intent intent = new Intent(context, ActivityReceiver.class);
+            final PendingIntent pendingIntent = PendingIntent.getService(context, 888971, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            apiClient = new GoogleApiClient.Builder(context)
+                    .addApi(ActivityRecognition.API)
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(@Nullable Bundle bundle) {
+                            ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(apiClient, ActivityReceiver.UPDATE_INTERVAL, pendingIntent);
+                        }
+
+                        @Override
+                        public void onConnectionSuspended(int i) {
+                            ActivityRecognition.ActivityRecognitionApi.removeActivityUpdates(apiClient, pendingIntent);
+                        }
+                    })
+                    .build();
+
+            apiClient.connect();
+        }
+    }
+
+    public static void unregisterActivityDataReceiver(Context context) {
+        if (apiClient != null) {
+            apiClient.disconnect();
+            apiClient = null;
         }
     }
 }
