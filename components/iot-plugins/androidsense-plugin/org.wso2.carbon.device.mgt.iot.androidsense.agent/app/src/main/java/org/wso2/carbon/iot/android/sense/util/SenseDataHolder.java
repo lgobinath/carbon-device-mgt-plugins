@@ -22,6 +22,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
+import org.wso2.carbon.iot.android.sense.event.streams.sms.SmsData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 
 import java.util.List;
@@ -43,6 +44,7 @@ public class SenseDataHolder {
     private static List<ScreenData> screenDataHolder;
     private static List<AudioData> audioDataHolder;
     private static List<ActivityData> activityDataHolder;
+    private static List<SmsData> smsDataHolder;
     //LocationData gps;
 
 
@@ -123,6 +125,13 @@ public class SenseDataHolder {
         return activityDataHolder;
     }
 
+    public static List<SmsData> getSmsDataHolder() {
+        if (smsDataHolder == null) {
+            smsDataHolder = new CopyOnWriteArrayList<>();
+        }
+        return smsDataHolder;
+    }
+
     public static void resetSensorDataHolder() {
         sensorDataHolder = null;
     }
@@ -161,5 +170,9 @@ public class SenseDataHolder {
 
     public static void resetActivityDataHolder() {
         activityDataHolder = null;
+    }
+
+    public static void resetSmsDataHolder() {
+        smsDataHolder = null;
     }
 }

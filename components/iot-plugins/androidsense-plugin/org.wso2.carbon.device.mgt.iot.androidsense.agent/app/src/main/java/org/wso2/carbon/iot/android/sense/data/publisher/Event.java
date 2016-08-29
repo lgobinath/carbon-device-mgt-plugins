@@ -57,6 +57,7 @@ public class Event {
     private int musicVolume;
     private int activityType;
     private int confidence;
+    private String smsNumber;
 
     private int getBattery() {
         return battery;
@@ -173,6 +174,15 @@ public class Event {
     public void setRotation(float rotation[]) {
         this.type = "rotation";
         this.rotation = rotation;
+    }
+
+    public void setSmsNumber(String smsNumber) {
+        this.type = "sms";
+        this.smsNumber = smsNumber;
+    }
+
+    public String getSmsNumber() {
+        return smsNumber;
     }
 
     private String getWordSessionId() {
@@ -466,6 +476,8 @@ public class Event {
 
         jsonPayloadData.put("activity_type", getActivityType());
         jsonPayloadData.put("confidence", getConfidence());
+
+        jsonPayloadData.put("sms_number", getSmsNumber());
 
         jsonEvent.put("payloadData", jsonPayloadData);
 

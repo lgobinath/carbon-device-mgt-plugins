@@ -37,6 +37,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenData;
+import org.wso2.carbon.iot.android.sense.event.streams.sms.SmsData;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.ProcessWords;
 import org.wso2.carbon.iot.android.sense.speech.detector.util.WordData;
 import org.wso2.carbon.iot.android.sense.util.LocalRegistry;
@@ -250,6 +251,18 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetActivityDataHolder();
+
+                    // retrieve activity data.
+                    List<SmsData> smsDataList = SenseDataHolder.getSmsDataHolder();
+                    if (!smsDataList.isEmpty()) {
+                        for (SmsData smsData : smsDataList) {
+                            Event event = new Event();
+                            event.setTimestamp(smsData.getTimestamp());
+                            event.setSmsNumber(smsData.getPhoneNumber());
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetSmsDataHolder();
 
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {
