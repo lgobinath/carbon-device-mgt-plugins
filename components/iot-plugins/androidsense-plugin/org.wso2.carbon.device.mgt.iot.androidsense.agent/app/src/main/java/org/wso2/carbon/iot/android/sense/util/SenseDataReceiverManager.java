@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 
@@ -31,9 +32,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.ActivityRecognition;
 
 import org.wso2.carbon.iot.android.sense.event.streams.activity.ActivityReceiver;
+import org.wso2.carbon.iot.android.sense.event.streams.application.ApplicationDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallDataReceiver;
 import org.wso2.carbon.iot.android.sense.event.streams.screen.ScreenDataReceiver;
+import org.wso2.carbon.iot.android.sense.event.streams.sms.SmsDataReceiver;
 
 public class SenseDataReceiverManager {
     private static BroadcastReceiver batteryDataReceiver;
@@ -43,6 +46,10 @@ public class SenseDataReceiverManager {
     private static BroadcastReceiver callDataReceiver;
 
     private static GoogleApiClient apiClient;
+
+    private static SmsDataReceiver smsDataReceiver;
+
+    private static ApplicationDataReceiver appDataReceiver;
 
     private SenseDataReceiverManager() {
 
@@ -130,6 +137,39 @@ public class SenseDataReceiverManager {
         if (apiClient != null) {
             apiClient.disconnect();
             apiClient = null;
+        }
+    }
+
+    public static void registerSmsDataReceiver(Context context) {
+        if (smsDataReceiver == null) {
+            smsDataReceiver = new SmsDataReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
+            context.registerReceiver(smsDataReceiver, intentFilter);
+        }
+    }
+
+    public static void unregisterSmsDataReceiver(Context context) {
+        if (smsDataReceiver != null) {
+            context.unregisterReceiver(smsDataReceiver);
+            smsDataReceiver = null;
+        }
+    }
+
+    public static void registerAppDataReceiver(Context context) {
+        if (appDataReceiver == null) {
+            appDataReceiver = new ApplicationDataReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+            intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+            context.registerReceiver(appDataReceiver, intentFilter);
+        }
+    }
+
+    public static void unregisterAppDataReceiver(Context context) {
+        if (appDataReceiver != null) {
+            context.unregisterReceiver(appDataReceiver);
+            appDataReceiver = null;
         }
     }
 }

@@ -54,6 +54,8 @@ public class SenseService extends Service {
         SenseDataReceiverManager.registerScreenDataReceiver(this);
         SenseDataReceiverManager.registerCallDataReceiver(this);
         SenseDataReceiverManager.registerActivityDataReceiver(this);
+        SenseDataReceiverManager.registerSmsDataReceiver(this);
+        SenseDataReceiverManager.registerAppDataReceiver(this);
         //service will not be stopped until we manually stop the service
         return Service.START_NOT_STICKY;
 
@@ -65,6 +67,9 @@ public class SenseService extends Service {
         SenseDataReceiverManager.unregisterScreenDataReceiver(this);
         SenseDataReceiverManager.unregisterCallDataReceiver(this);
         SenseDataReceiverManager.unregisterActivityDataReceiver(this);
+        SenseDataReceiverManager.unregisterSmsDataReceiver(this);
+        SenseDataReceiverManager.unregisterAppDataReceiver(this);
+
         SenseWakeLock.releaseCPUWakeLock();
         super.onDestroy();
     }

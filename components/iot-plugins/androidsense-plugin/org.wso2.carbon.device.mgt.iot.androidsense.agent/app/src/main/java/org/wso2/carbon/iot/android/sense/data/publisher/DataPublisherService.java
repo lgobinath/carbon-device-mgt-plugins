@@ -33,6 +33,7 @@ import org.wso2.carbon.iot.android.sense.event.streams.Location.LocationData;
 import org.wso2.carbon.iot.android.sense.event.streams.Sensor.SensorData;
 import org.wso2.carbon.iot.android.sense.event.streams.Speed.SpeedData;
 import org.wso2.carbon.iot.android.sense.event.streams.activity.ActivityData;
+import org.wso2.carbon.iot.android.sense.event.streams.application.ApplicationData;
 import org.wso2.carbon.iot.android.sense.event.streams.audio.AudioData;
 import org.wso2.carbon.iot.android.sense.event.streams.battery.BatteryData;
 import org.wso2.carbon.iot.android.sense.event.streams.call.CallData;
@@ -252,7 +253,7 @@ public class DataPublisherService extends Service {
                     }
                     SenseDataHolder.resetActivityDataHolder();
 
-                    // retrieve activity data.
+                    // retrieve sms data.
                     List<SmsData> smsDataList = SenseDataHolder.getSmsDataHolder();
                     if (!smsDataList.isEmpty()) {
                         for (SmsData smsData : smsDataList) {
@@ -263,6 +264,21 @@ public class DataPublisherService extends Service {
                         }
                     }
                     SenseDataHolder.resetSmsDataHolder();
+
+
+                    // retrieve application data.
+                    List<ApplicationData> appDataList = SenseDataHolder.getApplicationDataHolder();
+                    if (!appDataList.isEmpty()) {
+                        for (ApplicationData appData : appDataList) {
+                            Event event = new Event();
+                            event.setTimestamp(appData.getTimestamp());
+                            event.setPackageName(appData.getPackageName());
+                            event.setAction(appData.getAction().toString());
+                            events.add(event);
+                        }
+                    }
+                    SenseDataHolder.resetApplicationDataHolder();
+
 
                     //publish the data
                     if (events.size() > 0 && LocalRegistry.isEnrolled(context)) {

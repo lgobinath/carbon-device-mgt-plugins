@@ -58,6 +58,8 @@ public class Event {
     private int activityType;
     private int confidence;
     private String smsNumber;
+    private String packageName;
+    private String action;
 
     private int getBattery() {
         return battery;
@@ -200,6 +202,24 @@ public class Event {
     public void setWord(String word) {
         this.type = "word";
         this.word = word;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.type = "application";
+        this.packageName = packageName;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.type = "application";
+        this.action = action;
     }
 
     private long getTimestamp() {
@@ -478,6 +498,10 @@ public class Event {
         jsonPayloadData.put("confidence", getConfidence());
 
         jsonPayloadData.put("sms_number", getSmsNumber());
+
+        jsonPayloadData.put("application_name", getPackageName());
+        jsonPayloadData.put("action", getAction());
+
 
         jsonEvent.put("payloadData", jsonPayloadData);
 
