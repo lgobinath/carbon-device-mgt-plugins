@@ -22,10 +22,6 @@ public class Event {
      * LOW or OK
      */
     private String batteryState;
-    private double gps[]; //lat,long
-    private float accelerometer[]; //x,y,z
-    private float magnetic[]; //x,y,z
-    private float gyroscope[]; //x,y,z
     private float light;
     private float pressure;
     private float proximity;
