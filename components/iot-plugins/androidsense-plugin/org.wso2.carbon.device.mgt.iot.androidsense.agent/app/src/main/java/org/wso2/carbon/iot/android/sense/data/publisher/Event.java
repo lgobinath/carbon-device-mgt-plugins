@@ -12,6 +12,10 @@ public class Event {
     private String deviceId;
     private String type;
     private int battery;
+    private double gps[] = new double[]{0, 0}; //lat,long
+    private float accelerometer[] = new float[]{0, 0, 0}; //x,y,z
+    private float magnetic[] = new float[]{0, 0, 0};; //x,y,z
+    private float gyroscope[] = new float[]{0, 0, 0};; //x,y,z
     private int batteryTemperature;
     private int batteryStatus;
     /**
@@ -25,8 +29,8 @@ public class Event {
     private float light;
     private float pressure;
     private float proximity;
-    private float gravity[];
-    private float rotation[];
+    private float gravity[] = new float[]{0, 0, 0};;
+    private float rotation[] = new float[]{0, 0, 0};;
     private String wordSessionId;
     private String word;
     private String wordStatus;
@@ -98,7 +102,7 @@ public class Event {
     }
 
     private double[] getGps() {
-        return gps != null ? gps : new double[]{0, 0};
+        return gps;
     }
 
     public void setGps(double[] gps) {
@@ -107,7 +111,7 @@ public class Event {
     }
 
     private float[] getAccelerometer() {
-        return accelerometer != null ? accelerometer : new float[]{0, 0, 0};
+        return accelerometer;
     }
 
     public void setAccelerometer(float[] accelerometer) {
@@ -116,7 +120,7 @@ public class Event {
     }
 
     private float[] getMagnetic() {
-        return magnetic != null ? magnetic : new float[]{0, 0, 0};
+        return magnetic;
     }
 
     public void setMagnetic(float[] magnetic) {
@@ -125,7 +129,7 @@ public class Event {
     }
 
     private float[] getGyroscope() {
-        return gyroscope != null ? gyroscope : new float[]{0, 0, 0};
+        return gyroscope;
     }
 
     public void setGyroscope(float[] gyroscope) {
@@ -161,7 +165,7 @@ public class Event {
     }
 
     private float[] getGravity() {
-        return gravity != null ? gravity : new float[]{0, 0, 0};
+        return gravity;
     }
 
     public void setGravity(float gravity[]) {
@@ -170,7 +174,7 @@ public class Event {
     }
 
     private float[] getRotation() {
-        return rotation != null ? rotation : new float[]{0, 0, 0};
+        return rotation;
     }
 
     public void setRotation(float rotation[]) {
