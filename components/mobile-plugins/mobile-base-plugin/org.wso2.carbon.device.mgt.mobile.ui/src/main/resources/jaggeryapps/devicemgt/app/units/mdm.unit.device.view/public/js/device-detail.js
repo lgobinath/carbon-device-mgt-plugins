@@ -22,103 +22,67 @@ var InitiateViewOption = null;
     var deviceId = $(".device-id");
     var deviceIdentifier = deviceId.data("deviceid");
     var deviceType = deviceId.data("type");
-    var payload = [deviceIdentifier];
+    var ownership = deviceId.data("ownership");
     var operationTable;
-    var serviceUrl;
 
-    if (deviceType == "ios") {
-        serviceUrl = "/ios/operation/deviceinfo";
-    } else if (deviceType == "android") {
-        //var serviceUrl = "/mdm-android-agent/operation/device-info";
-        serviceUrl = "/api/device-mgt/android/v1.0/admin/devices/info";
-    }
-
-    if (serviceUrl) {
-        invokerUtil.post(
-            serviceUrl,
-            payload,
-            // success-callback
-            function () {
-                $(".panel-body").show();
-            },
-            // error-callback
-            function () {
-                var defaultInnerHTML =
-                    "<br><p class='fw-warning'>Device data may not have been updated. Please refresh to try again.<p>";
-                $(".panel-body").append(defaultInnerHTML);
-            }
-        );
-    }
-
+    positionArrow($(".media .list-group-item.active"),"#device_details_tab");
     $(".media.tab-responsive [data-toggle=tab]").on("shown.bs.tab", function (e) {
-        var activeTabPane = $(e.target).attr("href"),
-            activeCollapsePane = $(activeTabPane).find("[data-toggle=collapse]").data("target"),
-            activeCollapsePaneSiblings = $(activeTabPane).siblings().find("[data-toggle=collapse]").data("target"),
-            activeListGroupItem = $(".media .list-group-item.active");
-
-        $(activeCollapsePaneSiblings).collapse("hide");
-        $(activeCollapsePane).collapse("show");
-        positionArrow(activeListGroupItem);
-
-        $(".panel-heading .caret-updown").removeClass("fw-sort-down");
-        $(".panel-heading.collapsed .caret-updown").addClass("fw-sort-up");
+        var activeTabPane = $(e.target).attr("href");
+        var activeListGroupItem = $(".media .list-group-item.active");
+        $(activeTabPane).removeClass("visible-xs-block");
+        $(activeTabPane).siblings().not(".arrow-left").addClass("visible-xs-block");
+        positionArrow(activeListGroupItem,activeTabPane);
     });
 
     $(".media.tab-responsive .tab-content").on("shown.bs.collapse", function (e) {
-        var activeTabPane = $(e.target).parent().attr("id");
-        $(".media.tab-responsive [data-toggle=tab][href=#" + activeTabPane + "]").tab("show");
-        $(".panel-heading .caret-updown").removeClass("fw-sort-up");
-        $(".panel-heading.collapsed .caret-updown").addClass("fw-sort-down");
+        var thisParent = $(e.target).parent();
+        var activeTabPaneCaret = thisParent.find(".caret-updown");
+        var activeTabPaneCaretSiblings = thisParent.siblings().find(".caret-updown");
+        activeTabPaneCaret.removeClass("fw-up").addClass("fw-down");
+        activeTabPaneCaretSiblings.removeClass("fw-down").addClass("fw-up");
     });
 
-    function positionArrow(selectedTab) {
-        var selectedTabHeight = $(selectedTab).outerHeight();
+    $(".media.tab-responsive a[data-toggle='collapse']").on("click", function () {
+        var clickedPanel = $(this).attr('href');
+        if ($(clickedPanel).hasClass('in')) {
+            $(clickedPanel).collapse('hide');
+        } else {
+            $(clickedPanel).collapse('show');
+        }
+    });
+
+    function positionArrow(selectedTab,activeTabPane) {
+        var selectedTabHeight = $(selectedTab).innerHeight();
         var arrowPosition = 0;
         var totalHeight = 0;
         var arrow = $(".media .panel-group.tab-content .arrow-left");
-        var parentHeight = $(arrow).parent().outerHeight();
+        var parentHeight = $(arrow).parent().innerHeight();
 
-//        if($(selectedTab).prev().length){
-//            $(selectedTab).prevAll().each(function() {
-//                totalHeight += $(this).outerHeight();
-//            });
-//            arrowPosition = totalHeight + (selectedTabHeight / 2);
-//        }else{
-//            arrowPosition = selectedTabHeight / 2;
-//        }
+
+        if($(selectedTab).prev().length){
+            $(selectedTab).prevAll().each(function() {
+                totalHeight += $(this).innerHeight();
+            });
+            arrowPosition = totalHeight + (selectedTabHeight / 2);
+        }else{
+            arrowPosition = selectedTabHeight / 2;
+        }
 
         if(arrowPosition >= parentHeight){
-            parentHeight = arrowPosition + 10;
-            $(arrow).parent().height(parentHeight);
+            parentHeight = arrowPosition + 50;
+            $(arrow).siblings(".panel.active").height(parentHeight);
         }else{
             $(arrow).parent().removeAttr("style");
         }
+
         $(arrow).css("top", arrowPosition - 10);
+
+        var listHeight = $(".tab-responsive .media-left ul").height();
+        var paneHeight = $(activeTabPane).height();
+        if(listHeight > paneHeight){
+            $(activeTabPane).height(listHeight);
+        }
     }
-
-    $(document).ready(function() {
-        $(".device-detail-body").removeClass("hidden");
-        $("#loading-content").remove();
-        loadOperationBar(deviceType);
-        loadOperationsLog(false);
-        loadApplicationsList();
-        loadPolicyCompliance();
-
-        $("#refresh-policy").click(function () {
-            $("#policy-spinner").removeClass("hidden");
-            loadPolicyCompliance();
-        });
-
-        $("#refresh-apps").click(function () {
-            $("#apps-spinner").removeClass("hidden");
-            loadApplicationsList();
-        });
-
-        $("#refresh-operations").click(function () {
-            $("#operations-spinner").removeClass("hidden");
-            loadOperationsLog(true);
-        });
-    });
 
     function loadOperationsLog(update) {
         var operationsLogTable = "#operations-log-table";
@@ -228,17 +192,17 @@ var InitiateViewOption = null;
                             $("#applications-list-container").html(content);
                         } else {
                             $("#applications-list-container").
-                                html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;No applications found. " +
-                                    "please try refreshing the list in a while.<p></div>");
+                            html("<div class='message message-info'><h4><i class='icon fw fw-info'></i>No applications found.</h4>" +
+                                "<p>Please try refreshing the list in a while.</p></div>");
                         }
                     }
                 },
                 // error-callback
                 function () {
                     $("#applications-list-container").
-                        html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;Loading application list " +
-                            "was not successful. please try refreshing the list in a while.<p></div>");
-            });
+                    html("<div class='panel-body'><br><p class='fw-warning'>&nbsp;Loading application list " +
+                        "was not successful. please try refreshing the list in a while.<p></div>");
+                });
         });
     }
 
@@ -261,8 +225,8 @@ var InitiateViewOption = null;
                     // success-callback
                     function (data, textStatus, jqXHR) {
                         if (jqXHR.status == 200 && data) {
-                            data = JSON.parse(data);
                             $("#policy-spinner").addClass("hidden");
+                            data = JSON.parse(data);
                             if (data["active"] == true) {
                                 activePolicy = data;
                                 invokerUtil.get(
@@ -278,41 +242,100 @@ var InitiateViewOption = null;
                                             if (data["complianceData"]) {
                                                 if (data["complianceData"]["complianceFeatures"] &&
                                                     data["complianceData"]["complianceFeatures"].length > 0) {
-                                                    viewModel["compliance"] = "NON-COMPLIANT";
+                                                    viewModel["complianceStatus"] = "NON-COMPLIANT";
                                                     viewModel["complianceFeatures"] = data["complianceData"]["complianceFeatures"];
                                                     content = template(viewModel);
                                                     $("#policy-list-container").html(content);
                                                 } else {
-                                                    viewModel["compliance"] = "COMPLIANT";
+                                                    viewModel["complianceStatus"] = "COMPLIANT";
                                                     content = template(viewModel);
                                                     $("#policy-list-container").html(content);
                                                     $("#policy-compliance-table").addClass("hidden");
                                                 }
-                                            } else {
-                                                $("#policy-list-container").
-                                                    html("<div class='panel-body'><br><p class='fw-warning'> This device " +
-                                                        "has no policy applied.<p></div>");
                                             }
                                         }
                                     },
                                     // error-callback
                                     function () {
                                         $("#policy-list-container").
-                                            html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
-                                                "was not successful. please try refreshing data in a while.<p></div>");
+                                        html("<div class='message message-warning'>" +
+                                            "<h4 class='remove-margin'>" +
+                                            "<i class='icon fw fw-warning'></i>" +
+                                            "Loading policy compliance related data " +
+                                            "was not successful. please try refreshing in a while." +
+                                            "</h4>" +
+                                            "</div>" +
+                                            "<p class='add-padding-5x'></p>" +
+                                            "<p class='add-padding-5x'></p>" +
+                                            "<p class='add-padding-5x'></p>"
+                                        );
                                     }
                                 );
                             }
+                        } else if ((jqXHR.status == 200 && !data)) {
+                            $("#policy-spinner").addClass("hidden");
+                            $("#policy-list-container").
+                            html("<div class='message message-info'>" +
+                                "<h4 class='remove-margin'>" +
+                                "<i class='icon fw fw-info'></i>" +
+                                "There is currently no effective policy applied for this device." +
+                                "</h4>" +
+                                "</div>" +
+                                "<p class='add-padding-5x'></p>" +
+                                "<p class='add-padding-5x'></p>" +
+                                "<p class='add-padding-5x'></p>"
+                            );
                         }
                     },
                     // error-callback
                     function () {
+                        $("#policy-spinner").addClass("hidden");
                         $("#policy-list-container").
-                            html("<div class='panel-body'><br><p class='fw-warning'> Loading policy compliance related data " +
-                                "was not successful. please try refreshing data in a while.<p></div>");
+                        html("<div class='message message-warning'>" +
+                            "<h4 class='remove-margin'>" +
+                            "<i class='icon fw fw-warning'></i>" +
+                            "Loading policy compliance related data " +
+                            "was not successful. please try refreshing in a while." +
+                            "</h4>" +
+                            "</div>" +
+                            "<p class='add-padding-5x'></p>" +
+                            "<p class='add-padding-5x'></p>" +
+                            "<p class='add-padding-5x'></p>"
+                        );
                     }
                 );
             }
         );
     }
+
+    $(document).ready(function () {
+        $(".device-detail-body").removeClass("hidden");
+        $("#loading-content").remove();
+        if ($("#tabs").data("status") !== false) {
+            loadOperationBar(deviceType, ownership, operationBarModeConstants.SINGLE);
+        }
+        loadOperationsLog(false);
+        loadApplicationsList();
+        loadPolicyCompliance();
+
+        if ($("#device_details_tab").length == 0) {
+            $(".device-detail-body").addClass("hidden");
+        }
+
+        $("#refresh-policy").click(function () {
+            $("#policy-spinner").removeClass("hidden");
+            loadPolicyCompliance();
+        });
+
+        $("#refresh-apps").click(function () {
+            $("#apps-spinner").removeClass("hidden");
+            loadApplicationsList();
+        });
+
+        $("#refresh-operations").click(function () {
+            $("#operations-spinner").removeClass("hidden");
+            loadOperationsLog(true);
+        });
+    });
+
 }());

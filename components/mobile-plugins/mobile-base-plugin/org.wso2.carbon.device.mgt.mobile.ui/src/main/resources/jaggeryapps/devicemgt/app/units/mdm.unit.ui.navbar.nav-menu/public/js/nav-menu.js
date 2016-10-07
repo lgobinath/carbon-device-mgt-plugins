@@ -16,9 +16,9 @@
  * under the License.
  */
 
-var modalPopup = ".wr-modalpopup",
-    modalPopupContainer = modalPopup + " .modalpopup-container",
-    modalPopupContent = modalPopup + " .modalpopup-content";
+var modalPopup = ".modal",
+    modalPopupContainer = modalPopup + " .modal-content",
+    modalPopupContent = modalPopup + " .modal-content";
 
 var emmAdminBasePath = "/api/device-mgt/v1.0";
 
@@ -46,8 +46,7 @@ function setPopupMaxHeight() {
  * show popup function.
  */
 function showPopup() {
-    $(modalPopup).show();
-    setPopupMaxHeight();
+    $(modalPopup).modal('show');
 }
 
 /*
@@ -56,7 +55,9 @@ function showPopup() {
 function hidePopup() {
     $(modalPopupContent).html("");
     $(modalPopupContent).removeClass("operation-data");
-    $(modalPopup).hide();
+    $(modalPopup).modal('hide');
+    $('body').removeClass('modal-open').css('padding-right','0px');
+    $('.modal-backdrop').remove();
 }
 
 /*
@@ -72,21 +73,26 @@ function generateQRCode(qrCodeClass) {
 }
 
 function toggleEnrollment() {
-    $(".modalpopup-content").html($("#qr-code-modal").html());
-    generateQRCode(".modalpopup-content .qr-code");
+    $(".modal-content").html($("#qr-code-modal").html());
+    generateQRCode(".modal-content .qr-code");
     showPopup();
 }
 
 var updateNotificationCountOnSuccess = function (data, textStatus, jqXHR) {
     var notificationBubble = "#notification-bubble";
+    var notificationIcon = "#notifications-icon";
+    var notificationSpacer = "#notifications-spacer";
     if (jqXHR.status == 200 && data) {
         var responsePayload = JSON.parse(data);
         var newNotificationsCount = responsePayload["count"];
         if (newNotificationsCount > 0) {
-            $(notificationBubble).html(newNotificationsCount);
-            $(notificationBubble).show();
+            $(notificationBubble).html(newNotificationsCount + " NEW");
+            $(notificationBubble).removeClass("hidden");
+            $(notificationSpacer).removeClass("hidden");
         } else {
-            $(notificationBubble).hide();
+            $(notificationBubble).addClass("hidden");
+            $(notificationSpacer).addClass("hidden");
+            $(notificationIcon).removeClass("hidden");
         }
     }
 };
@@ -101,7 +107,7 @@ function loadNewNotificationsOnSideViewPanel() {
     if ($("#right-sidebar").attr("is-authorized") == "false") {
         $("#notification-bubble-wrapper").remove();
     } else {
-        var serviceURL = emmAdminBasePath + "/notifications?status=NEW";
+        var serviceURL = emmAdminBasePath + "/notifications?offset=0&limit=6&status=NEW";
         invokerUtil.get(serviceURL, updateNotificationCountOnSuccess, updateNotificationCountOnError);
         loadNewNotifications();
     }
@@ -116,7 +122,7 @@ function loadNewNotifications() {
         var currentUser = notifications.data("currentUser");
 
         $.template("notification-listing", notifications.attr("src"), function (template) {
-            var serviceURL = emmAdminBasePath + "/notifications?status=NEW";
+            var serviceURL = emmAdminBasePath + "/notifications?offset=0&limit=6&status=NEW";
             invokerUtil.get(
                 serviceURL,
                 // on success
@@ -127,21 +133,27 @@ function loadNewNotifications() {
                         if (responsePayload["notifications"]) {
                             if (responsePayload.count > 0) {
                                 viewModel["notifications"] = responsePayload["notifications"];
+                                viewModel.contextPath = context;
                                 $(messageSideBar).html(template(viewModel));
                             } else {
-                                $(messageSideBar).html('<div class="message message-info message-no-new"><h4><i class="icon fw fw-info"></i>No new notifications found...</h4></div>');
+                                $(messageSideBar).html(
+                                    "<h4 class='text-center'>No New Notifications</h4>" +
+                                    "<h5 class='text-center text-muted'>" +
+                                    "Check this section for error notifications<br>related to device operations" +
+                                    "</h5>"
+                                );
                             }
                         } else {
-                            $(messageSideBar).html("<h4 class ='message-danger'>Unexpected error " +
-                                "occurred while loading new notifications.</h4>");
+                            $(messageSideBar).html("<h4 class ='message-danger text-center'>Unexpected error " +
+                                "occurred while loading new notifications</h4>");
                         }
                     }
                 },
                 // on error
                 function (jqXHR) {
                     if (jqXHR.status = 500) {
-                        $(messageSideBar).html("<h4 class ='message-danger'>Unexpected error occurred while trying " +
-                            "to retrieve any new notifications.</h4>");
+                        $(messageSideBar).html("<h4 class ='message-danger text-center'>Unexpected error occurred while trying " +
+                            "to retrieve any new notifications</h4>");
                     }
                 }
             );
@@ -356,16 +368,12 @@ $(document).ready(function () {
         var redirectUrl = $(this).data("url");
         var markAsReadNotificationsEpr = emmAdminBasePath + "/notifications/" + notificationId + "/mark-checked";
         var messageSideBar = ".sidebar-messages";
-
         invokerUtil.put(
             markAsReadNotificationsEpr,
             null,
             // on success
             function (data) {
-                data = JSON.parse(data);
-                if (data.statusCode == responseCodes["ACCEPTED"]) {
-                    location.href = redirectUrl;
-                }
+                window.location.href = redirectUrl;
             },
             // on error
             function () {

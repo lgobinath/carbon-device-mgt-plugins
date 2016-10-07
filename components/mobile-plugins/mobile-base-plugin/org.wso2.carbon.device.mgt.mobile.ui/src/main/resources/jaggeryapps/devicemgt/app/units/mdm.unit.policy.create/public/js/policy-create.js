@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -49,7 +48,9 @@ var androidOperationConstants = {
     "VPN_OPERATION": "vpn",
     "VPN_OPERATION_CODE": "VPN",
     "APPLICATION_OPERATION":"app-restriction",
-    "APPLICATION_OPERATION_CODE":"APP-RESTRICTION"
+    "APPLICATION_OPERATION_CODE":"APP-RESTRICTION",
+    "KIOSK_APPS_CODE":"KIOSK_APPS",
+    "KIOSK_APPS":"cosu-whitelisted-applications"
 };
 
 // Constants to define iOS Operation Constants
@@ -353,7 +354,23 @@ validateStep["policy-profile"] = function () {
                     };
                     continueToCheckNextInputs = false;
                 }
-
+                // For the secure wifi types, it is required to have a password
+                var wifiTypeUIElement = $("#wifi-type");
+                var wifiType = wifiTypeUIElement.find("option:selected").val();
+                if (wifiTypeUIElement.is("input:checkbox")) {
+                    wifiType = wifiTypeUIElement.is(":checked").toString();
+                }
+                if (wifiType != "none") {
+                    if (!$("#wifi-password").val()) {
+                        validationStatus = {
+                            "error": true,
+                            "subErrorMsg": "Password is required for the wifi security type " + wifiType + ". " +
+                            "Please provide a password to proceed.",
+                            "erroneousFeature": operation
+                        };
+                        continueToCheckNextInputs = false;
+                    }
+                }
                 // at-last, if the value of continueToCheckNextInputs is still true
                 // this means that no error is found
                 if (continueToCheckNextInputs) {
@@ -520,8 +537,96 @@ validateStep["policy-profile"] = function () {
                 validationStatusArray.push(validationStatus);
 
             }
+            if ($.inArray(androidOperationConstants["KIOSK_APPS_CODE"], configuredOperations) != -1) {
+                //If COSU whitelisting applications configured
+                operation = androidOperationConstants["KIOSK_APPS"];
+                // Initializing continueToCheckNextInputs to true
+                continueToCheckNextInputs = true;
+
+                var whitelistedApplicationsGridChildInputs = "div#cosu-whitelisted-applications .child-input";
+
+                if (continueToCheckNextInputs) {
+                    if ($(whitelistedApplicationsGridChildInputs).length == 0) {
+                        validationStatus = {
+                            "error": true,
+                            "subErrorMsg": "Applications are not provided in application whitelist list.",
+                            "erroneousFeature": operation
+                        };
+                        continueToCheckNextInputs = false;
+                    }
+                    else {
+                        childInputCount = 0;
+                        childInputArray = [];
+                        emptyChildInputCount = 0;
+                        duplicatesExist = false;
+                        // Looping through each child input
+                        $(whitelistedApplicationsGridChildInputs).each(function () {
+                            childInputCount++;
+                            if (childInputCount % 2 == 0) {
+                                // If child input is of second column
+                                childInput = $(this).val();
+                                childInputArray.push(childInput);
+                                // Updating emptyChildInputCount
+                                if (!childInput) {
+                                    // If child input field is empty
+                                    emptyChildInputCount++;
+                                }
+                            }
+                        });
+                        // Checking for duplicates
+                        initialChildInputArrayLength = childInputArray.length;
+                        if (emptyChildInputCount == 0 && initialChildInputArrayLength > 1) {
+                            for (m = 0; m < (initialChildInputArrayLength - 1); m++) {
+                                poppedChildInput = childInputArray.pop();
+                                for (n = 0; n < childInputArray.length; n++) {
+                                    if (poppedChildInput == childInputArray[n]) {
+                                        duplicatesExist = true;
+                                        break;
+                                    }
+                                }
+                                if (duplicatesExist) {
+                                    break;
+                                }
+                            }
+                        }
+                        // Updating validationStatus
+                        if (emptyChildInputCount > 0) {
+                            // If empty child inputs are present
+                            validationStatus = {
+                                "error": true,
+                                "subErrorMsg": "One or more package names of " +
+                                               "applications are empty.",
+                                "erroneousFeature": operation
+                            };
+                            continueToCheckNextInputs = false;
+                        } else if (duplicatesExist) {
+                            // If duplicate input is present
+                            validationStatus = {
+                                "error": true,
+                                "subErrorMsg": "Duplicate values exist with " +
+                                               "for package names.",
+                                "erroneousFeature": operation
+                            };
+                            continueToCheckNextInputs = false;
+                        }
+
+                    }
+                }
+
+                if (continueToCheckNextInputs) {
+                    validationStatus = {
+                        "error": false,
+                        "okFeature": operation
+                    };
+                }
+
+                // Updating validationStatusArray with validationStatus
+                validationStatusArray.push(validationStatus);
+
+            }
         }
-    }if (policy["platform"] == platformTypeConstants["WINDOWS"]) {
+    }
+    if (policy["platform"] == platformTypeConstants["WINDOWS"]) {
         if (configuredOperations.length == 0) {
             // updating validationStatus
             validationStatus = {
@@ -619,7 +724,8 @@ validateStep["policy-profile"] = function () {
             }
 
         }
-    } else if (policy["platform"] == platformTypeConstants["IOS"]) {
+    }
+    else if (policy["platform"] == platformTypeConstants["IOS"]) {
         if (configuredOperations.length == 0) {
             // updating validationStatus
             validationStatus = {
@@ -1168,7 +1274,7 @@ validateStep["policy-profile"] = function () {
             }
 
             if ($.inArray(iosOperationConstants["VPN_OPERATION_CODE"], configuredOperations) != -1) {
-                // if WIFI is configured
+                // if VPN is configured
                 operation = iosOperationConstants["VPN_OPERATION"];
                 // initializing continueToCheckNextInputs to true
                 continueToCheckNextInputs = true;
@@ -2439,6 +2545,24 @@ var slideDownPaneAgainstValueSet = function (selectElement, paneID, valueSet) {
                 }
             }
         );
+    }
+};
+
+var slideDownPaneAgainstValueSetForRadioButtons = function (selectElement, paneID, valueSet) {
+    var selectedValueOnChange = selectElement.value;
+
+    var i, slideDownVotes = 0;
+    for (i = 0; i < valueSet.length; i++) {
+        if (selectedValueOnChange == valueSet[i]) {
+            slideDownVotes++;
+        }
+    }
+
+    var paneSelector = "#" + paneID;
+    if(slideDownVotes > 0) {
+        $(paneSelector).removeClass("hidden");
+    } else {
+        $(paneSelector).addClass("hidden");
     }
 };
 // End of HTML embedded invoke methods
