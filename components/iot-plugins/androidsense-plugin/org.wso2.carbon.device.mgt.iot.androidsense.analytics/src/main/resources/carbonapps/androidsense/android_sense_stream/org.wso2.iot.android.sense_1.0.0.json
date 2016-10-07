@@ -13,7 +13,7 @@
     {"name": "battery", "type": "INT"},
     {"name": "battery_state", "type": "STRING"},
     {"name": "battery_status", "type": "STRING"},
-    {"name": "battery_temperature", "type": "STRING"},
+    {"name": "battery_temperature", "type": "INT"},
     {"name": "gps_lat", "type": "DOUBLE"},
     {"name": "gps_long", "type": "DOUBLE"},
     {"name": "accelerometer_x", "type": "FLOAT"},
